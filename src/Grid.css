@@ -1,0 +1,17 @@
+.grid-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.grid-row {
+  display: flex;
+}
+
+.grid-square {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #ccc;
+  margin: 1px;
+  cursor: pointer;
+}
