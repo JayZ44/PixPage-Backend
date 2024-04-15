@@ -6,9 +6,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const artworksController = require("./controllers/artworksController.js");
+app.use("/artworks", artworksController);
+
 // ROUTES
 app.get("/", (req, res) => {
-  res.send("Welcome to Bookmarks App");
+  res.send("Welcome to PixPage!");
 });
 
 // 404 PAGE
