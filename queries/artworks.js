@@ -52,9 +52,24 @@ const createArtworkGrid = async (artwork) => {
   }
 };
 
+// create artwork squares
+const createArtworkSquares = async (artwork) => {
+  const { coordinates, color, grid_id } = artwork;
+  try {
+    const newArtwork = await db.one(
+      "INSERT INTO squares (coordinates,color,grid_id) VALUES($1,$2,$3) RETURNING *",
+      [coordinates, color, grid_id]
+    );
+    return newArtwork;
+  } catch (error) {
+    return error;
+  }
+};
+
 module.exports = {
   getAllArtworks,
   getArtwork,
   deleteArtwork,
   createArtworkGrid,
+  createArtworkSquares,
 };

@@ -4,6 +4,7 @@ const {
   getAllArtworks,
   getArtwork,
   createArtworkGrid,
+  createArtworkSquares,
 } = require("../queries/artworks");
 
 // get all
@@ -33,4 +34,9 @@ artworks.post("/", async (req, res) => {
   res.json(artworkGrid);
 });
 
+// create square
+artworks.post("/squares", async (req, res) => {
+  const artworkSquare = await createArtworkSquares(req.body);
+  res.json(artworkSquare);
+});
 module.exports = artworks;
