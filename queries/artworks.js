@@ -25,6 +25,7 @@ const getArtwork = async (id) => {
   }
 };
 
+// delete one artwork (grids ofc)
 const deleteArtwork = async (id) => {
   console.log(id);
   try {
@@ -66,10 +67,48 @@ const createArtworkSquares = async (artwork) => {
   }
 };
 
+// update artwork grid
+const updateArtworkGrid = async (id, artwork) => {
+  //{"title": "Demo4",
+  // "creator": "Demoman",
+  // "created_at": "NOW()",
+  // "grid_size": 9}
+  const { title, creator, created_at, grid_size } = artwork;
+  try {
+    const updatedArtworkGrid = await db.one(
+      "UPDATE grids SET title=$1,creator=$2,created_at=$3,grid_size=$4 WHERE id=$5 RETURNING *",
+      [title, creator, created_at, grid_size, id]
+    );
+    return updatedArtworkGrid;
+  } catch (error) {
+    return error;
+  }
+};
+
+// update artwork squares
+const updateArtworkSquares = async (id, artwork) => {
+  //{"coordinates": "a3",
+  // "color": "yellow",
+  // "grid_id": "4"}
+  const { coordinates, color, grid_id } = artwork;
+  //   console.log(coordinates, color, grid_id, id);
+  try {
+    const updatedArtworkSquares = await db.one(
+      "UPDATE squares SET coordinates=$1,color=$2,grid_id=$3 WHERE id=$4 RETURNING *",
+      [coordinates, color, grid_id, id]
+    );
+
+    return updatedArtworkSquares;
+  } catch (error) {
+    return error;
+  }
+};
 module.exports = {
   getAllArtworks,
   getArtwork,
   deleteArtwork,
   createArtworkGrid,
   createArtworkSquares,
+  updateArtworkGrid,
+  updateArtworkSquares,
 };

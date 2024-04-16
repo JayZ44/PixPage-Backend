@@ -6,6 +6,8 @@ const {
   createArtworkGrid,
   createArtworkSquares,
   deleteArtwork,
+  updateArtworkGrid,
+  updateArtworkSquares,
 } = require("../queries/artworks");
 
 // get all
@@ -47,6 +49,28 @@ artworks.delete("/:id", async (req, res) => {
   const deletingArtwork = await deleteArtwork(id);
   if (deletingArtwork.id) {
     res.status(200).json(deletingArtwork);
+  } else {
+    res.status(404).json({ error: "not found. oof" });
+  }
+});
+
+// update grid
+artworks.put("/:id", async (req, res) => {
+  const { id } = req.params;
+  const updatingArtwork = await updateArtworkGrid(id, req.body);
+  if (updatingArtwork.id) {
+    res.status(200).json(updatingArtwork);
+  } else {
+    res.status(404).json({ error: "not found. oof" });
+  }
+});
+
+// update squares
+artworks.put("/squares/:id", async (req, res) => {
+  const { id } = req.params;
+  const updatingArtwork = await updateArtworkSquares(id, req.body);
+  if (updatingArtwork.id) {
+    res.status(200).json(updatingArtwork);
   } else {
     res.status(404).json({ error: "not found. oof" });
   }
