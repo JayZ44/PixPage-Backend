@@ -5,6 +5,7 @@ const {
   getArtwork,
   createArtworkGrid,
   createArtworkSquares,
+  deleteArtwork,
 } = require("../queries/artworks");
 
 // get all
@@ -38,5 +39,16 @@ artworks.post("/", async (req, res) => {
 artworks.post("/squares", async (req, res) => {
   const artworkSquare = await createArtworkSquares(req.body);
   res.json(artworkSquare);
+});
+
+// delete grid
+artworks.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+  const deletingArtwork = await deleteArtwork(id);
+  if (deletingArtwork.id) {
+    res.status(200).json(deletingArtwork);
+  } else {
+    res.status(404).json({ error: "not found. oof" });
+  }
 });
 module.exports = artworks;
