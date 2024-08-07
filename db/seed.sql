@@ -3,10 +3,13 @@
 
 -- Create your seedfiles here using SQL -  INSERT INTO() VALUES()
 
-INSERT INTO grids(title,creator,created_at,grid_size)
+INSERT INTO creators(name,bio) VALUES('demoman','The man behind the demo.');
+
+
+INSERT INTO grids(title,creator,creator_id,created_at,grid_size)
 VALUES
-('demo','demoman',NOW(),9),
-('demo2','demoman',NOW(),9);
+('demo','demoman',1,NOW(),9),
+('demo2','demoman',1,NOW(),9);
 INSERT INTO squares(
   coordinates,color,grid_id  
 )

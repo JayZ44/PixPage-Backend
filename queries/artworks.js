@@ -11,8 +11,20 @@ const getAllArtworks = async () => {
   }
 };
 
+// all creators
+
+const getAllCreators = async () => {
+  try {
+    const allCreators = await db.any("SELECT * FROM creators");
+    console.log(allCreators);
+    return allCreators;
+  } catch (error) {
+    return error;
+  }
+};
+
 // one artwork (squares)
-const getArtwork = async (id) => {
+const getArtworkSquares = async (id) => {
   console.log(id);
   try {
     const oneArtwork = await db.any(
@@ -25,12 +37,32 @@ const getArtwork = async (id) => {
   }
 };
 
+const getOneArtwork = async (id) => {
+  try {
+    const artwork = await db.any("SELECT * FROM grids WHERE id=$1", id);
+    console.log(artwork);
+    return artwork;
+  } catch (error) {
+    return error;
+  }
+};
+
+const getCreator = async (id) => {
+  console.log(id);
+  try {
+    const oneCreator = await db.any("SELECT * FROM creators WHERE id=$1", id);
+    return oneCreator;
+  } catch (error) {
+    return error;
+  }
+};
+
 // delete one artwork (grids ofc)
 const deleteArtwork = async (id) => {
   console.log(id);
   try {
     const deletedArtwork = await db.any(
-      "DELETE FROM squares WHERE grid_id=$1 RETURNING *",
+      "DELETE FROM grids WHERE id=$1 RETURNING *",
       id
     );
     return deletedArtwork;
@@ -39,13 +71,26 @@ const deleteArtwork = async (id) => {
   }
 };
 
+const deleteCreator = async (id) => {
+  console.log(id);
+  try {
+    const deletedCreator = await db.any(
+      "DELETE FROM creators WHERE id=$1 RETURNING *",
+      id
+    );
+    return deletedCreator;
+  } catch (error) {
+    return error;
+  }
+};
+
 // create artwork grid
 const createArtworkGrid = async (artwork) => {
-  const { title, creator, created_at, grid_size } = artwork;
+  const { title, creator, created_at, grid_size, creator_id } = artwork;
   try {
     const newArtwork = await db.one(
-      "INSERT INTO grids (title, creator, created_at, grid_size) VALUES($1,$2,$3,$4) RETURNING *",
-      [title, creator, created_at, grid_size]
+      "INSERT INTO grids (title, creator, created_at, grid_size, creator_id) VALUES($1,$2,$3,$4,$5) RETURNING *",
+      [title, creator, created_at, grid_size, creator_id]
     );
     return newArtwork;
   } catch (error) {
@@ -53,17 +98,45 @@ const createArtworkGrid = async (artwork) => {
   }
 };
 
-// create artwork squares
-const createArtworkSquares = async (artwork) => {
-  const { coordinates, color, grid_id } = artwork;
+const createCreator = async (creator) => {
+  const { name, bio } = creator;
   try {
-    const newArtwork = await db.one(
-      "INSERT INTO squares (coordinates,color,grid_id) VALUES($1,$2,$3) RETURNING *",
-      [coordinates, color, grid_id]
+    const newCreator = await db.one(
+      "INSERT INTO creators (name, bio) VALUES($1,$2) RETURNING *",
+      [name, bio]
     );
-    return newArtwork;
+    return newCreator;
   } catch (error) {
     return error;
+  }
+};
+
+// create artwork squares
+const createArtworkSquares = async (artworkArrayOfArrays) => {
+  try {
+    for (const artworkArray of artworkArrayOfArrays) {
+      for (const artwork of artworkArray) {
+        console.log("Artwork object:", artwork); // Log each object in the inner arrays
+
+        const { coordinates, color, grid_id } = artwork;
+
+        if (
+          coordinates === undefined ||
+          color === undefined ||
+          grid_id === undefined
+        ) {
+          console.error("Error: One or more values are undefined!");
+          continue; // Skip this item if values are undefined
+        }
+
+        await db.one(
+          "INSERT INTO squares (coordinates, color, grid_id) VALUES($1, $2, $3) RETURNING *",
+          [coordinates, color, grid_id]
+        );
+      }
+    }
+  } catch (error) {
+    console.error("Database error:", error);
   }
 };
 
@@ -87,28 +160,57 @@ const updateArtworkGrid = async (id, artwork) => {
 
 // update artwork squares
 const updateArtworkSquares = async (id, artwork) => {
-  //{"coordinates": "a3",
-  // "color": "yellow",
-  // "grid_id": "4"}
   const { coordinates, color, grid_id } = artwork;
-  //   console.log(coordinates, color, grid_id, id);
+
+  console.log("Updating square with ID:", id);
+  console.log("New data:", { coordinates, color, grid_id });
+  console.log("ARTWORK", artwork);
   try {
-    const updatedArtworkSquares = await db.one(
-      "UPDATE squares SET coordinates=$1,color=$2,grid_id=$3 WHERE id=$4 RETURNING *",
+    const updatedArtworkSquares = await db.oneOrNone(
+      "UPDATE squares SET coordinates=$1, color=$2, grid_id=$3 WHERE id=$4 RETURNING *",
       [coordinates, color, grid_id, id]
     );
 
+    if (!updatedArtworkSquares) {
+      console.log("No square found with ID:", id);
+      return { error: "No square found with the provided ID." };
+    }
+
     return updatedArtworkSquares;
+  } catch (error) {
+    console.error("Error updating square:", error);
+    return { error: "Database error occurred." };
+  }
+};
+
+const updateCreator = async (id, creator) => {
+  const { name, bio } = creator;
+  console.log(creator, id);
+  try {
+    const updatedCreator = await db.one(
+      "UPDATE creators SET name=$1, bio=$2 WHERE id=$3 RETURNING *",
+      [name, bio, id]
+    );
+
+    console.log("UPDATED", updatedCreator);
+
+    return updatedCreator;
   } catch (error) {
     return error;
   }
 };
 module.exports = {
   getAllArtworks,
-  getArtwork,
+  getAllCreators,
+  getArtworkSquares,
+  getOneArtwork,
+  getCreator,
   deleteArtwork,
+  deleteCreator,
   createArtworkGrid,
+  createCreator,
   createArtworkSquares,
   updateArtworkGrid,
   updateArtworkSquares,
+  updateCreator,
 };
