@@ -1,7 +1,14 @@
-# Express Server Starter
+# PixPage Backend
 
-This is a basic Express Starter that you can use to build out your backend applications.
+## Setup
 
-It also includes the configuration for a database.
+- Fork and clone this repo
+- Type "npm install" into the terminal to install dependencies
+- Type "npm run db:init" and "npm run db:seed" to setup the database
+- Type "npm start" to start the server
 
-You need only rename the `.env.example.md` file into a `.env` file and name the database to your postgresql name
+The backend is now ready to recieve requests from the frontend!
+
+## Frontend Link:
+
+https://github.com/JayZ44/PixPage-Frontend
